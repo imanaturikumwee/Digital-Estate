@@ -42,67 +42,6 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
       {/* Top Device & Accessibility Utility Bar */}
-      <div className="bg-slate-100 dark:bg-slate-950 px-4 sm:px-8 py-1.5 flex flex-wrap items-center justify-between text-[11px] font-medium text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800/80">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-blue-900 dark:text-blue-400 font-headline">Preview Device:</span>
-          <div className="flex gap-1 bg-white dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs">
-            {(
-              [
-                { mode: 'fluid', label: 'Fluid Screen', icon: 'fit_screen' },
-                { mode: 'desktop', label: 'Desktop 1440px', icon: 'desktop_windows' },
-                { mode: 'tablet', label: 'Tablet 768px', icon: 'tablet_mac' },
-                { mode: 'mobile', label: 'Mobile 390px', icon: 'smartphone' },
-              ] as const
-            ).map((item) => (
-              <button
-                key={item.mode}
-                onClick={() => onSetDeviceMode(item.mode)}
-                title={`Switch to ${item.label}`}
-                aria-label={item.label}
-                className={`px-2 py-0.5 rounded flex items-center gap-1 transition-all ${
-                  deviceMode === item.mode
-                    ? 'bg-blue-900 text-white font-bold shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[13px]">{item.icon}</span>
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onOpenDocs}
-            className="flex items-center gap-1 hover:text-blue-900 dark:hover:text-blue-300 transition-colors text-slate-500 hover:underline"
-          >
-            <span className="material-symbols-outlined text-sm">terminal</span>
-            <span>Docs &amp; Tests</span>
-          </button>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <button
-            onClick={onToggleDark}
-            className="flex items-center gap-1 hover:text-blue-900 dark:hover:text-blue-300 transition-colors text-slate-500"
-            title="Toggle Light / Dark mode"
-            aria-label={`Toggle theme, current is ${isDark ? 'Dark' : 'Light'}`}
-          >
-            <span className="material-symbols-outlined text-sm">
-              {isDark ? 'light_mode' : 'dark_mode'}
-            </span>
-            <span>{isDark ? 'Light' : 'Dark'}</span>
-          </button>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <button
-            onClick={onOpenSettings}
-            className="flex items-center gap-1 hover:text-blue-900 dark:hover:text-blue-300 transition-colors text-slate-500"
-            title="Open user preferences & filters"
-          >
-            <span className="material-symbols-outlined text-sm">tune</span>
-            <span>Preferences</span>
-          </button>
-        </div>
-      </div>
 
       {/* Main Top Bar */}
       <div className="flex items-center justify-between px-4 sm:px-8 h-16 max-w-screen-2xl mx-auto">

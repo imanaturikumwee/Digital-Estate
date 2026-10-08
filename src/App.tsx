@@ -605,7 +605,7 @@ export default function App() {
         onMarkNotificationRead={handleMarkNotificationRead}
         onTriggerTestNotification={handleTriggerTestNotification}
       />
-
+      
       {/* Responsive Preview Outer Wrapper */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${getDeviceFrameStyles()}`}>
         {/* Main Layout Body */}
