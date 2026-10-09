@@ -207,6 +207,8 @@ const INITIAL_PROPERTIES: Property[] = [
 export default function App() {
   // Navigation & Screen State
   const [currentScreen, setCurrentScreen] = useState<'dashboard' | 'portal' | 'chat' | 'insights' | 'auth'>('dashboard');
+  const [previousScreen, setPreviousScreen] = useState<'dashboard' | 'portal' | 'chat' | 'insights'>('dashboard');
+  const [authInitialMode, setAuthInitialMode] = useState<'login' | 'signup'>('login');
   const [sidebarTab, setSidebarTab] = useState<string>('estates');
   const [deviceMode, setDeviceMode] = useState<'fluid' | 'desktop' | 'tablet' | 'mobile'>('fluid');
 
@@ -520,6 +522,10 @@ export default function App() {
   // Robust screen switcher
   const handleNavigate = (screen: string) => {
     if (screen === 'signin' || screen === 'signup' || screen === 'auth') {
+      if (currentScreen !== 'auth') {
+        setPreviousScreen(currentScreen as any);
+      }
+      setAuthInitialMode(screen === 'signup' ? 'signup' : 'login');
       setCurrentScreen('auth');
       return;
     }
@@ -604,6 +610,7 @@ export default function App() {
         notifications={notifications}
         onMarkNotificationRead={handleMarkNotificationRead}
         onTriggerTestNotification={handleTriggerTestNotification}
+        authMode={authInitialMode}
       />
       
       {/* Responsive Preview Outer Wrapper */}
@@ -626,7 +633,7 @@ export default function App() {
 
           {/* Primary Main Content Area */}
           <main className="flex-1 min-w-0 p-4 sm:p-8 lg:p-10 pb-28 md:pb-12 overflow-x-hidden">
-            {currentScreen === 'dashboard' && (
+            {(currentScreen === 'dashboard' || (currentScreen === 'auth' && previousScreen === 'dashboard')) && (
               <Dashboard
                 properties={properties}
                 onOpenAddProperty={() => setIsAddOpen(true)}
@@ -642,7 +649,7 @@ export default function App() {
               />
             )}
 
-            {currentScreen === 'portal' && (
+            {(currentScreen === 'portal' || (currentScreen === 'auth' && (previousScreen === 'portal' || !['dashboard', 'chat', 'insights'].includes(previousScreen)))) && (
               <PublicPortal
                 properties={properties}
                 onSelectProperty={(prop) => {
@@ -668,7 +675,7 @@ export default function App() {
               />
             )}
 
-            {currentScreen === 'chat' && (
+            {(currentScreen === 'chat' || (currentScreen === 'auth' && previousScreen === 'chat')) && (
               <ChatScreen
                 currentUser={currentUser}
                 activePropertyContext={activeChatProperty}
@@ -680,7 +687,7 @@ export default function App() {
               />
             )}
 
-            {currentScreen === 'insights' && (
+            {(currentScreen === 'insights' || (currentScreen === 'auth' && previousScreen === 'insights')) && (
               <InsightsScreen
                 onOpenValuation={() => setIsValuationOpen(true)}
                 onNavigateToPortal={() => {
@@ -692,6 +699,8 @@ export default function App() {
 
             {currentScreen === 'auth' && (
               <AuthScreen
+                initialMode={authInitialMode}
+                onModeChange={(mode) => setAuthInitialMode(mode)}
                 onLoginSuccess={(user) => {
                   setCurrentUser(user);
                   setCurrentScreen('dashboard');
@@ -699,7 +708,7 @@ export default function App() {
                   showToast(`Welcome back, ${user.name}!`);
                 }}
                 onCancel={() => {
-                  setCurrentScreen('dashboard');
+                  setCurrentScreen(previousScreen);
                 }}
               />
             )}

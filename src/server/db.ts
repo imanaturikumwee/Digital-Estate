@@ -1,4 +1,4 @@
-import { Property, User, ChatThread, ChatMessage, NotificationItem } from '../types/index.js';
+import { Property, User, UserRole, ChatThread, ChatMessage, NotificationItem } from '../types/index.js';
 
 // Scalable In-Memory Data Store (Production-ready interface for PostgreSQL / Cloud SQL)
 export class Database {
@@ -13,28 +13,74 @@ export class Database {
   }
 
   private seedData() {
-    // Default demo user (Estate Manager / Owner)
-    const demoOwner: User & { passwordHash: string } = {
-      id: 'usr-1',
-      name: 'Emma Mugisha',
-      email: 'owner@digitalestate.rw',
-      phone: '+250 788 123 456',
-      role: 'owner',
-      avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnC_CYf59wj1KWpQbKwTevMc93XUx8tDhFlMINQju0ESrB9wiHgs_Je71Nz198cKnEqi1SHyjucLymsHQleyHUKKjOaVMLWca93yqjqCO_vZwxG0bD4WCj7JtuktMjlttoB0Ub8Yaes96YQ3cjOww2JVjJk-4WXNVNT2QkV4Rw-mKfM2n3_kjJEoM1k9nrSkRnLvUtphuS-60KAtnmdbRetDo_rOh1IHTUZ8YPr85_2vJP71dxPx9kXxHfKdKnwXzIcajJxkoon9RB',
-      passwordHash: 'password123',
-    };
-    this.users.set(demoOwner.email.toLowerCase(), demoOwner);
+    // Default demo users matching Horizon roles (Buyer, Tenant, Owner, Agent, Staff)
+    const demoUsers: (User & { passwordHash: string })[] = [
+      {
+        id: 'usr-1',
+        name: 'Emma Mugisha',
+        email: 'owner@digitalestate.rw',
+        phone: '+250 788 123 456',
+        role: 'owner',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnC_CYf59wj1KWpQbKwTevMc93XUx8tDhFlMINQju0ESrB9wiHgs_Je71Nz198cKnEqi1SHyjucLymsHQleyHUKKjOaVMLWca93yqjqCO_vZwxG0bD4WCj7JtuktMjlttoB0Ub8Yaes96YQ3cjOww2JVjJk-4WXNVNT2QkV4Rw-mKfM2n3_kjJEoM1k9nrSkRnLvUtphuS-60KAtnmdbRetDo_rOh1IHTUZ8YPr85_2vJP71dxPx9kXxHfKdKnwXzIcajJxkoon9RB',
+        passwordHash: 'password123',
+      },
+      {
+        id: 'usr-owner-horizon',
+        name: 'Emma Mugisha',
+        email: 'owner@horizon.rw',
+        phone: '+250 788 123 456',
+        role: 'owner',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnC_CYf59wj1KWpQbKwTevMc93XUx8tDhFlMINQju0ESrB9wiHgs_Je71Nz198cKnEqi1SHyjucLymsHQleyHUKKjOaVMLWca93yqjqCO_vZwxG0bD4WCj7JtuktMjlttoB0Ub8Yaes96YQ3cjOww2JVjJk-4WXNVNT2QkV4Rw-mKfM2n3_kjJEoM1k9nrSkRnLvUtphuS-60KAtnmdbRetDo_rOh1IHTUZ8YPr85_2vJP71dxPx9kXxHfKdKnwXzIcajJxkoon9RB',
+        passwordHash: 'password123',
+      },
+      {
+        id: 'usr-2',
+        name: 'Jean-Luc Habimana',
+        email: 'buyer@digitalestate.rw',
+        phone: '+250 788 987 654',
+        role: 'buyer',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCNnsM2qZznMr2bOd5Lfw9M6QQq4uZDif7lwv_ggpnimoXxrTK49IyLITqtdfYzMIZrtjY_zUbhwbyCjLCfK6fegHP0E8UeVVTiSERIltCQACEIbuybdiohJHocQ0Tt3VdoWtEg2l5djKg3LPFHNSbeXi6upWW7oaXwvNUqbW29i-2TPcWRdGvrYKjXB2c4g8cj-AJNO0Lyiv_OCg3XcOQkbmlfHnQ82Fs2KxWO8qyTNDjVIdbwloCefmkBkq1nK4UOJTwC334WmHoV',
+        passwordHash: 'password123',
+      },
+      {
+        id: 'usr-buyer-horizon',
+        name: 'Horizon VIP Investor',
+        email: 'investor@horizon.rw',
+        phone: '+250 788 555 101',
+        role: 'buyer',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCNnsM2qZznMr2bOd5Lfw9M6QQq4uZDif7lwv_ggpnimoXxrTK49IyLITqtdfYzMIZrtjY_zUbhwbyCjLCfK6fegHP0E8UeVVTiSERIltCQACEIbuybdiohJHocQ0Tt3VdoWtEg2l5djKg3LPFHNSbeXi6upWW7oaXwvNUqbW29i-2TPcWRdGvrYKjXB2c4g8cj-AJNO0Lyiv_OCg3XcOQkbmlfHnQ82Fs2KxWO8qyTNDjVIdbwloCefmkBkq1nK4UOJTwC334WmHoV',
+        passwordHash: 'password123',
+      },
+      {
+        id: 'usr-tenant-horizon',
+        name: 'Diplomatic Resident',
+        email: 'tenant@horizon.rw',
+        phone: '+250 788 555 102',
+        role: 'tenant',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGsxJf63wBNFLzunIniZ6gsts8iZTtMZMBoTk6qcnYAsJn3XfyZ39rQLLVMn7WvAju7ewdihcb_H1Wkh7WVLUMKL0vww1Mor9MDAArbRrP4W7a5Q13kl3aUWZIxQFVAmBbKTCBJEam6dRGoywvcU9BXvmA1IFEMV3wVhI1iR88iDQjMU3bWtxAEMkLoWxUmGSr7xXk_cQ5fbsyvVPvGj9HTPQDCXFXPngftFQfhxljNt_O7YxC4iFx-4BLXxMTtFsi4YQ3Cf0e1ohQ',
+        passwordHash: 'password123',
+      },
+      {
+        id: 'usr-agent-horizon',
+        name: 'Dany Mugisha',
+        email: 'agent@horizon.rw',
+        phone: '+250 788 555 103',
+        role: 'agent',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGsxJf63wBNFLzunIniZ6gsts8iZTtMZMBoTk6qcnYAsJn3XfyZ39rQLLVMn7WvAju7ewdihcb_H1Wkh7WVLUMKL0vww1Mor9MDAArbRrP4W7a5Q13kl3aUWZIxQFVAmBbKTCBJEam6dRGoywvcU9BXvmA1IFEMV3wVhI1iR88iDQjMU3bWtxAEMkLoWxUmGSr7xXk_cQ5fbsyvVPvGj9HTPQDCXFXPngftFQfhxljNt_O7YxC4iFx-4BLXxMTtFsi4YQ3Cf0e1ohQ',
+        passwordHash: 'password123',
+      },
+      {
+        id: 'usr-staff-horizon',
+        name: 'Horizon Concierge Staff',
+        email: 'staff@horizon.rw',
+        phone: '+250 788 555 104',
+        role: 'staff',
+        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnC_CYf59wj1KWpQbKwTevMc93XUx8tDhFlMINQju0ESrB9wiHgs_Je71Nz198cKnEqi1SHyjucLymsHQleyHUKKjOaVMLWca93yqjqCO_vZwxG0bD4WCj7JtuktMjlttoB0Ub8Yaes96YQ3cjOww2JVjJk-4WXNVNT2QkV4Rw-mKfM2n3_kjJEoM1k9nrSkRnLvUtphuS-60KAtnmdbRetDo_rOh1IHTUZ8YPr85_2vJP71dxPx9kXxHfKdKnwXzIcajJxkoon9RB',
+        passwordHash: 'password123',
+      },
+    ];
 
-    const demoBuyer: User & { passwordHash: string } = {
-      id: 'usr-2',
-      name: 'Jean-Luc Habimana',
-      email: 'buyer@digitalestate.rw',
-      phone: '+250 788 987 654',
-      role: 'buyer',
-      avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCNnsM2qZznMr2bOd5Lfw9M6QQq4uZDif7lwv_ggpnimoXxrTK49IyLITqtdfYzMIZrtjY_zUbhwbyCjLCfK6fegHP0E8UeVVTiSERIltCQACEIbuybdiohJHocQ0Tt3VdoWtEg2l5djKg3LPFHNSbeXi6upWW7oaXwvNUqbW29i-2TPcWRdGvrYKjXB2c4g8cj-AJNO0Lyiv_OCg3XcOQkbmlfHnQ82Fs2KxWO8qyTNDjVIdbwloCefmkBkq1nK4UOJTwC334WmHoV',
-      passwordHash: 'password123',
-    };
-    this.users.set(demoBuyer.email.toLowerCase(), demoBuyer);
+    demoUsers.forEach(u => this.users.set(u.email.toLowerCase(), u));
 
     // Seed Properties matching the user screenshots exactly
     const initialProperties: Property[] = [
@@ -317,7 +363,7 @@ export class Database {
     return undefined;
   }
 
-  createUser(userData: Omit<User, 'id'> & { password: string }) {
+  createUser(userData: Omit<User, 'id' | 'avatarUrl'> & { avatarUrl?: string; password: string }) {
     const id = `usr-${Date.now()}`;
     const newUser: User & { passwordHash: string } = {
       id,
@@ -330,6 +376,33 @@ export class Database {
     };
     this.users.set(newUser.email.toLowerCase(), newUser);
     return newUser;
+  }
+
+  findOrCreateOAuthUser(provider: string, role: UserRole = 'buyer', email?: string, name?: string) {
+    const cleanEmail = email ? email.toLowerCase() : `${provider}.${role}@horizon.rw`;
+    let user = this.findUserByEmail(cleanEmail);
+    if (!user) {
+      const providerLabel = provider.charAt(0).toUpperCase() + provider.slice(1);
+      const displayName = name || `${providerLabel} Verified ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+      const avatarMap: Record<UserRole, string> = {
+        buyer: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCNnsM2qZznMr2bOd5Lfw9M6QQq4uZDif7lwv_ggpnimoXxrTK49IyLITqtdfYzMIZrtjY_zUbhwbyCjLCfK6fegHP0E8UeVVTiSERIltCQACEIbuybdiohJHocQ0Tt3VdoWtEg2l5djKg3LPFHNSbeXi6upWW7oaXwvNUqbW29i-2TPcWRdGvrYKjXB2c4g8cj-AJNO0Lyiv_OCg3XcOQkbmlfHnQ82Fs2KxWO8qyTNDjVIdbwloCefmkBkq1nK4UOJTwC334WmHoV',
+        tenant: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGsxJf63wBNFLzunIniZ6gsts8iZTtMZMBoTk6qcnYAsJn3XfyZ39rQLLVMn7WvAju7ewdihcb_H1Wkh7WVLUMKL0vww1Mor9MDAArbRrP4W7a5Q13kl3aUWZIxQFVAmBbKTCBJEam6dRGoywvcU9BXvmA1IFEMV3wVhI1iR88iDQjMU3bWtxAEMkLoWxUmGSr7xXk_cQ5fbsyvVPvGj9HTPQDCXFXPngftFQfhxljNt_O7YxC4iFx-4BLXxMTtFsi4YQ3Cf0e1ohQ',
+        owner: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnC_CYf59wj1KWpQbKwTevMc93XUx8tDhFlMINQju0ESrB9wiHgs_Je71Nz198cKnEqi1SHyjucLymsHQleyHUKKjOaVMLWca93yqjqCO_vZwxG0bD4WCj7JtuktMjlttoB0Ub8Yaes96YQ3cjOww2JVjJk-4WXNVNT2QkV4Rw-mKfM2n3_kjJEoM1k9nrSkRnLvUtphuS-60KAtnmdbRetDo_rOh1IHTUZ8YPr85_2vJP71dxPx9kXxHfKdKnwXzIcajJxkoon9RB',
+        agent: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGsxJf63wBNFLzunIniZ6gsts8iZTtMZMBoTk6qcnYAsJn3XfyZ39rQLLVMn7WvAju7ewdihcb_H1Wkh7WVLUMKL0vww1Mor9MDAArbRrP4W7a5Q13kl3aUWZIxQFVAmBbKTCBJEam6dRGoywvcU9BXvmA1IFEMV3wVhI1iR88iDQjMU3bWtxAEMkLoWxUmGSr7xXk_cQ5fbsyvVPvGj9HTPQDCXFXPngftFQfhxljNt_O7YxC4iFx-4BLXxMTtFsi4YQ3Cf0e1ohQ',
+        staff: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnC_CYf59wj1KWpQbKwTevMc93XUx8tDhFlMINQju0ESrB9wiHgs_Je71Nz198cKnEqi1SHyjucLymsHQleyHUKKjOaVMLWca93yqjqCO_vZwxG0bD4WCj7JtuktMjlttoB0Ub8Yaes96YQ3cjOww2JVjJk-4WXNVNT2QkV4Rw-mKfM2n3_kjJEoM1k9nrSkRnLvUtphuS-60KAtnmdbRetDo_rOh1IHTUZ8YPr85_2vJP71dxPx9kXxHfKdKnwXzIcajJxkoon9RB',
+      };
+
+      user = this.createUser({
+        name: displayName,
+        email: cleanEmail,
+        role,
+        password: `oauth_${provider}_secret`,
+        avatarUrl: avatarMap[role] || avatarMap.buyer,
+      });
+    } else if (role && user.role !== role) {
+      user.role = role;
+    }
+    return user;
   }
 
   // Property Operations

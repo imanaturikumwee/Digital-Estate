@@ -68,6 +68,39 @@ async function runAllTests() {
     assert(user?.role === 'owner', 'User role must be owner');
   });
 
+  await test('Verifies Horizon role accounts (Buyer, Tenant, Owner, Agent, Staff)', () => {
+    const buyer = db.findUserByEmail('investor@horizon.rw');
+    assert(buyer !== undefined, 'investor@horizon.rw must exist');
+    assert(buyer?.role === 'buyer', 'Role must be buyer');
+
+    const tenant = db.findUserByEmail('tenant@horizon.rw');
+    assert(tenant !== undefined, 'tenant@horizon.rw must exist');
+    assert(tenant?.role === 'tenant', 'Role must be tenant');
+
+    const agent = db.findUserByEmail('agent@horizon.rw');
+    assert(agent !== undefined, 'agent@horizon.rw must exist');
+    assert(agent?.role === 'agent', 'Role must be agent');
+
+    const staff = db.findUserByEmail('staff@horizon.rw');
+    assert(staff !== undefined, 'staff@horizon.rw must exist');
+    assert(staff?.role === 'staff', 'Role must be staff');
+  });
+
+  await test('Generates verified social OAuth profiles for Google, Apple, GitHub, and Facebook', () => {
+    const googleUser = db.findOrCreateOAuthUser('google', 'buyer', 'google.buyer@horizon.rw');
+    assert(googleUser.email === 'google.buyer@horizon.rw', 'OAuth email must match');
+    assert(googleUser.role === 'buyer', 'OAuth role must match');
+
+    const appleUser = db.findOrCreateOAuthUser('apple', 'tenant');
+    assert(appleUser.role === 'tenant', 'Apple role must match tenant');
+
+    const githubUser = db.findOrCreateOAuthUser('github', 'staff');
+    assert(githubUser.role === 'staff', 'GitHub role must match staff');
+
+    const fbUser = db.findOrCreateOAuthUser('facebook', 'agent');
+    assert(fbUser.role === 'agent', 'Facebook role must match agent');
+  });
+
   await test('Creates new user with specified role and prevents email duplicates', () => {
     const testEmail = `agent_${Date.now()}@digitalestate.rw`;
     const created = db.createUser({

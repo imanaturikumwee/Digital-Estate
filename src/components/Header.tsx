@@ -16,6 +16,7 @@ interface HeaderProps {
   notifications: NotificationItem[];
   onMarkNotificationRead: (id: string) => void;
   onTriggerTestNotification: () => void;
+  authMode?: 'login' | 'signup';
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -32,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   notifications,
   onMarkNotificationRead,
   onTriggerTestNotification,
+  authMode = 'login',
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -40,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   const unreadCount = safeNotifications.filter(n => !n?.read).length;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
       {/* Top Device & Accessibility Utility Bar */}
 
       {/* Main Top Bar */}
@@ -210,16 +212,24 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => onNavigate('auth')}
-                className="px-3.5 py-1.5 text-xs font-bold text-blue-900 dark:text-blue-300 hover:underline font-headline"
+                onClick={() => onNavigate('signin')}
+                className={`px-3.5 py-1.5 text-xs font-bold font-headline cursor-pointer transition-colors ${
+                  currentScreen === 'auth' && authMode === 'login'
+                    ? 'text-blue-900 dark:text-blue-400 font-extrabold underline underline-offset-4'
+                    : 'text-slate-700 dark:text-slate-200 hover:text-blue-900 dark:hover:text-blue-400 hover:underline'
+                }`}
               >
-                Sign In
+                Log in
               </button>
               <button
-                onClick={() => onNavigate('auth')}
-                className="px-4 py-1.5 bg-blue-900 dark:bg-blue-600 text-white rounded-xl text-xs font-bold shadow-xs hover:opacity-90 active:scale-95 transition-all font-headline"
+                onClick={() => onNavigate('signup')}
+                className={`px-4 py-1.5 rounded-xl text-xs font-bold shadow-xs hover:opacity-95 active:scale-95 transition-all font-headline cursor-pointer ${
+                  currentScreen === 'auth' && authMode === 'signup'
+                    ? 'ring-2 ring-blue-500 bg-[#0e1e25] text-white shadow-md'
+                    : 'bg-[#0e1e25] hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white'
+                }`}
               >
-                Join Estate
+                Sign up
               </button>
             </div>
           )}
